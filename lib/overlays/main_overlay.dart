@@ -1,113 +1,75 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
+// ignore_for_file: avoid_print
 
-class DragOverlayLogic extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'dart:async';
+
+class DragAndHoldExample extends StatefulWidget {
+  const DragAndHoldExample({super.key});
+
   @override
-  _DragOverlayLogicState createState() => _DragOverlayLogicState();
+  DragAndHoldExampleState createState() => DragAndHoldExampleState();
 }
 
-class _DragOverlayLogicState extends State<DragOverlayLogic> {
-  Offset initialPosition = Offset(0, 0);
-  Offset finalPosition = Offset(0, 0);
-  bool isDrawing = false;
+class DragAndHoldExampleState extends State<DragAndHoldExample> {
+  Offset position = const Offset(100, 100);
+  Offset? initialPosition;
+  Offset? holdPosition;
   Timer? holdTimer;
-  bool isHeld = false;
+  bool isHolding = false;
+
+  @override
+  void dispose() {
+    holdTimer?.cancel();
+    super.dispose();
+  }
+
+  void startHoldTimer(Offset newPosition) {
+    holdTimer?.cancel();
+    holdPosition = newPosition;
+
+    holdTimer = Timer(const Duration(milliseconds: 700), () {
+      setState(() {
+        isHolding = true;
+      });
+      print('Held at position: $holdPosition for 1 second');
+    });
+  }
+
+  void onPanStart(DragStartDetails details) {
+    initialPosition = position;
+    print('Drag started at: $initialPosition');
+    startHoldTimer(position);
+  }
+
+  void onPanUpdate(DragUpdateDetails details) {
+    setState(() {
+      position += details.delta;
+    });
+
+    if (holdPosition != null && (position - holdPosition!).distance > 10) {
+      holdTimer?.cancel();
+      isHolding = false;
+      startHoldTimer(position);
+    }
+  }
+
+  void onPanEnd(DragEndDetails details) {
+    holdTimer?.cancel();
+    print('Drag ended at: $position');
+    isHolding = false;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Stack(
-          children: <Widget>[
-            // CustomPainter for drawing the rectangle
-
-            // Draggable Icon
-            Positioned(
-              left: finalPosition.dx,
-              top: finalPosition.dy,
-              child: GestureDetector(
-                onPanDown: (_) {
-                  // Start a timer for 1 second hold
-                  holdTimer = Timer(Duration(seconds: 1), () {
-                    setState(() {
-                      isHeld = true; // Mark as held
-                    });
-                  });
-                },
-                onPanCancel: () => holdTimer?.cancel(),
-                onPanEnd: (_) => holdTimer?.cancel(),
-                child: Draggable(
-                  feedback: buildDraggableIcon(),
-                  child: buildDraggableIcon(),
-                  onDragStarted: () {
-                    if (isHeld) {
-                      setState(() {
-                        initialPosition =
-                            finalPosition; // Set initial drag position
-                        isDrawing = true; // Start drawing
-                      });
-                    }
-                  },
-                  onDragUpdate: (details) {
-                    // Update final position dynamically
-                    setState(() {
-                      finalPosition =
-                          _clampPosition(details.globalPosition, constraints);
-                    });
-                  },
-                  onDragEnd: (details) {
-                    // Finish drawing and capture final position
-                    setState(() {
-                      isDrawing = false;
-                      print("Initial Position: $initialPosition");
-                      print("Final Position: $finalPosition");
-                    });
-                  },
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+    return GestureDetector(
+      onPanStart: onPanStart,
+      onPanUpdate: onPanUpdate,
+      onPanEnd: onPanEnd,
+      child: Icon(
+        Icons.location_on,
+        color: isHolding ? Colors.green : Colors.blue,
+        size: 50,
+      ),
     );
   }
-
-  // Helper function to clamp the draggable position within screen bounds
-  Offset _clampPosition(Offset offset, BoxConstraints constraints) {
-    double dx = offset.dx.clamp(0.0, constraints.maxWidth - 50);
-    double dy = offset.dy.clamp(0.0, constraints.maxHeight - 50);
-    return Offset(dx, dy);
-  }
-
-  // Build the draggable icon
-  Widget buildDraggableIcon() {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.blue),
-      child: Icon(Icons.circle, color: Colors.white),
-    );
-  }
-}
-
-// CustomPainter for drawing the rectangle
-class RectanglePainter extends CustomPainter {
-  final Offset start;
-  final Offset end;
-
-  RectanglePainter(this.start, this.end);
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = Colors.red
-      ..strokeWidth = 2
-      ..style = PaintingStyle.stroke;
-
-    var rect = Rect.fromPoints(start, end);
-    canvas.drawRect(rect, paint);
-  }
-
-  @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

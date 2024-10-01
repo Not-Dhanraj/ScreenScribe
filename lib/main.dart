@@ -14,7 +14,7 @@ void overlayMain() {
   runApp(
     MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: DragOverlayLogic(),
+      home: DragAndHoldExample(),
     ),
   );
 }
