@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
@@ -6,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -67,14 +69,13 @@ class _HomePageState extends State<HomePage> {
                 if (await FlutterOverlayWindow.isActive()) return;
                 await FlutterOverlayWindow.showOverlay(
                   enableDrag: true,
-                  overlayTitle: "X-SLAYER",
+                  overlayTitle: "Ocr",
                   overlayContent: 'Overlay Enabled',
                   flag: OverlayFlag.defaultFlag,
                   visibility: NotificationVisibility.visibilityPublic,
-                  positionGravity: PositionGravity.left,
-                  height: (MediaQuery.of(context).size.height * 0.6).toInt(),
-                  width: WindowSize.matchParent,
-                  startPosition: const OverlayPosition(0, -259),
+                  positionGravity: PositionGravity.auto,
+                  height: 100,
+                  width: 100,
                 );
               },
               child: const Text("Show Overlay"),

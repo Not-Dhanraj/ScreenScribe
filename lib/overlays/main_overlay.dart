@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+
 class DragAndHoldExample extends StatefulWidget {
   const DragAndHoldExample({super.key});
 
@@ -48,7 +50,6 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
 
     if (holdPosition != null && (position - holdPosition!).distance > 10) {
       holdTimer?.cancel();
-      isHolding = false;
       startHoldTimer(position);
     }
   }
@@ -59,16 +60,27 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
     isHolding = false;
   }
 
+  void onCancel() {
+    print('Canceled');
+    isHolding = false;
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onPanStart: onPanStart,
-      onPanUpdate: onPanUpdate,
-      onPanEnd: onPanEnd,
-      child: Icon(
-        Icons.location_on,
-        color: isHolding ? Colors.green : Colors.blue,
-        size: 50,
+    return Material(
+      color: Colors.transparent,
+      elevation: 0.0,
+      child: GestureDetector(
+        onPanStart: onPanStart,
+        onPanUpdate: onPanUpdate,
+        onPanEnd: onPanEnd,
+        onTap: () {},
+        child: Icon(
+          Icons.location_on,
+          color: isHolding ? Colors.green : Colors.blue,
+          size: 40,
+        ),
       ),
     );
   }
