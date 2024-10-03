@@ -29,17 +29,15 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.6
+  device_info_plus: ^10.1.2
   flutter:
     sdk: flutter
+  flutter_accessibility_service: ^0.2.4
   flutter_overlay_window: ^0.4.5
+  path_provider: ^2.1.4
+  permission_handler: ^11.3.1
 
 dev_dependencies:
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
   flutter_lints: ^3.0.0
   flutter_test:
     sdk: flutter

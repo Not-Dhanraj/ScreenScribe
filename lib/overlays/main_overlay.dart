@@ -1,9 +1,10 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:flutter_accessibility_service/constants.dart';
 import 'dart:async';
 
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 
 class DragAndHoldExample extends StatefulWidget {
   const DragAndHoldExample({super.key});
@@ -13,9 +14,9 @@ class DragAndHoldExample extends StatefulWidget {
 }
 
 class DragAndHoldExampleState extends State<DragAndHoldExample> {
-  Offset position = const Offset(100, 100);
+  Offset finalPos = const Offset(100, 100);
   Offset? initialPosition;
-  Offset? holdPosition;
+  Offset? initPos;
   Timer? holdTimer;
   bool isHolding = false;
 
@@ -27,37 +28,50 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
 
   void startHoldTimer(Offset newPosition) {
     holdTimer?.cancel();
-    holdPosition = newPosition;
+    !isHolding ? initPos = newPosition : null;
+    // initPos = newPosition;
 
     holdTimer = Timer(const Duration(milliseconds: 700), () {
-      setState(() {
-        isHolding = true;
-      });
-      print('Held at position: $holdPosition for 1 second');
+      if (!isHolding) {
+        setState(() {
+          isHolding = true;
+        });
+        print('Held at initpPos: $initPos for 1 second');
+      }
     });
   }
 
+  late int x1, x2, x3, x4, y1, y2, y3, y4;
+
+//TODO: Implement the onPanEnd method
+  void onPanEnd(DragEndDetails details) async {
+    holdTimer?.cancel();
+    print('Drag ended at: $finalPos');
+    isHolding = false;
+    print(
+      "finalPos: $finalPos, initialPosition: $initialPosition, initPos: $initPos",
+    );
+
+    FlutterAccessibilityService.performGlobalAction(
+      GlobalAction.globalActionTakeScreenshot,
+    );
+  }
+
   void onPanStart(DragStartDetails details) {
-    initialPosition = position;
+    initialPosition = finalPos;
     print('Drag started at: $initialPosition');
-    startHoldTimer(position);
+    startHoldTimer(finalPos);
   }
 
   void onPanUpdate(DragUpdateDetails details) {
     setState(() {
-      position += details.delta;
+      finalPos += details.delta;
     });
 
-    if (holdPosition != null && (position - holdPosition!).distance > 10) {
+    if (initPos != null && (finalPos - initPos!).distance > 10) {
       holdTimer?.cancel();
-      startHoldTimer(position);
+      startHoldTimer(finalPos);
     }
-  }
-
-  void onPanEnd(DragEndDetails details) {
-    holdTimer?.cancel();
-    print('Drag ended at: $position');
-    isHolding = false;
   }
 
   void onCancel() {
@@ -75,7 +89,6 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
         onPanStart: onPanStart,
         onPanUpdate: onPanUpdate,
         onPanEnd: onPanEnd,
-        onTap: () {},
         child: Icon(
           Icons.location_on,
           color: isHolding ? Colors.green : Colors.blue,

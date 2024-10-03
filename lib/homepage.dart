@@ -1,11 +1,16 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:permission_handler/permission_handler.dart';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -80,6 +85,24 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text("Show Overlay"),
             ),
+            TextButton(
+              onPressed: () async {
+                final bool status = await FlutterAccessibilityService
+                    .isAccessibilityPermissionEnabled();
+                if (!status) {
+                  await FlutterAccessibilityService
+                      .requestAccessibilityPermission();
+                }
+              },
+              child: const Text("req accessibility"),
+            ),
+            TextButton(
+              onPressed: () async {
+                _requestStoragePermission();
+                print(Platform.version);
+              },
+              child: const Text("req storage permission"),
+            ),
             const SizedBox(height: 10.0),
             TextButton(
               onPressed: () async {
@@ -144,5 +167,9 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  void _requestStoragePermission() async {
+    openAppSettings();
   }
 }
