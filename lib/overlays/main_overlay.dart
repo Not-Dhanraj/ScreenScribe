@@ -1,10 +1,13 @@
 // ignore_for_file: avoid_print
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_accessibility_service/constants.dart';
 import 'dart:async';
 
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
+import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 class DragAndHoldExample extends StatefulWidget {
   const DragAndHoldExample({super.key});
@@ -41,20 +44,52 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
     });
   }
 
+  Future<String?> getLatestScreenshot() async {
+    // Try using MediaStore to get latest screenshot from Pictures/Screenshots directory.
+    final screenshotsDir =
+        Directory('/storage/emulated/0/Pictures/Screenshots');
+
+    if (await screenshotsDir.exists()) {
+      List<FileSystemEntity> files = screenshotsDir.listSync();
+
+      // Sort files by last modified time to get the latest one.
+      files.sort((a, b) {
+        return File(b.path)
+            .lastModifiedSync()
+            .compareTo(File(a.path).lastModifiedSync());
+      });
+
+      if (files.isNotEmpty) {
+        return files.first.path;
+      }
+    }
+    return null;
+  }
+
   late int x1, x2, x3, x4, y1, y2, y3, y4;
+  String? path;
 
 //TODO: Implement the onPanEnd method
   void onPanEnd(DragEndDetails details) async {
-    holdTimer?.cancel();
-    print('Drag ended at: $finalPos');
-    isHolding = false;
-    print(
-      "finalPos: $finalPos, initialPosition: $initialPosition, initPos: $initPos",
-    );
+    if (isHolding) {
+      holdTimer?.cancel();
+      print('Drag ended at: $finalPos');
+      isHolding = false;
+      print(
+        "finalPos: $finalPos, initialPosition: $initialPosition, initPos: $initPos",
+      );
+      await Future.delayed(const Duration(milliseconds: 50));
 
-    FlutterAccessibilityService.performGlobalAction(
-      GlobalAction.globalActionTakeScreenshot,
-    );
+      FlutterAccessibilityService.performGlobalAction(
+        GlobalAction.globalActionTakeScreenshot,
+      );
+      await Future.delayed(const Duration(milliseconds: 500));
+      String? pth = await getLatestScreenshot();
+
+      path = pth;
+      await FlutterOverlayWindow.resizeOverlay(200, 400, true);
+      setState(() {});
+    }
   }
 
   void onPanStart(DragStartDetails details) {
@@ -85,16 +120,18 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
     return Material(
       color: Colors.transparent,
       elevation: 0.0,
-      child: GestureDetector(
-        onPanStart: onPanStart,
-        onPanUpdate: onPanUpdate,
-        onPanEnd: onPanEnd,
-        child: Icon(
-          Icons.location_on,
-          color: isHolding ? Colors.green : Colors.blue,
-          size: 40,
-        ),
-      ),
+      child: path != null
+          ? Image.file(File(path!))
+          : GestureDetector(
+              onPanStart: onPanStart,
+              onPanUpdate: onPanUpdate,
+              onPanEnd: onPanEnd,
+              child: Icon(
+                Icons.location_on,
+                color: isHolding ? Colors.green : Colors.blue,
+                size: 40,
+              ),
+            ),
     );
   }
 }
