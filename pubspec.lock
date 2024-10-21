@@ -41,6 +41,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  crop_image:
+    dependency: "direct main"
+    description:
+      name: crop_image
+      sha256: "6cf20655ecbfba99c369d43ec7adcfa49bf135af88fb75642173d6224a95d3f1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.13"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -128,6 +136,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  google_mlkit_commons:
+    dependency: transitive
+    description:
+      name: google_mlkit_commons
+      sha256: "7e9a6d6e66b44aa8cfe944bda9bc3346c52486dd890ca49e5bc98845cda40d7f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.9.0"
+  google_mlkit_text_recognition:
+    dependency: "direct main"
+    description:
+      name: google_mlkit_text_recognition
+      sha256: e7609cec8de3022680a36ead8a8bafa9fd2360ea018a728feaad12dcb0e3c177
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.14.0"
   leak_tracker:
     dependency: transitive
     description:
@@ -184,6 +208,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.15.0"
+  native_image_cropper:
+    dependency: "direct main"
+    description:
+      name: native_image_cropper
+      sha256: d9cb7c7e5904e5dc28c37ebf0d68d2fed2d46b161960e7770c078e98c80e66b0
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
+  native_image_cropper_android:
+    dependency: transitive
+    description:
+      name: native_image_cropper_android
+      sha256: "77106960beee19fd080dc8bd609709da44e13824175cd6c1d330a8b7178a152e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
+  native_image_cropper_ios:
+    dependency: transitive
+    description:
+      name: native_image_cropper_ios
+      sha256: "4c40ffc8ea1e52078384bba6adfae8a90bef064ebbb25a0d52211b828b3895aa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
+  native_image_cropper_macos:
+    dependency: transitive
+    description:
+      name: native_image_cropper_macos
+      sha256: f3815264a7755047f0b38413c69f5b76ed4ffdd7af28edeacfc134b08b1d5a74
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
+  native_image_cropper_platform_interface:
+    dependency: transitive
+    description:
+      name: native_image_cropper_platform_interface
+      sha256: "3ac1484f83abd62be7ff1d74c475137c59008aa01e671d8678d5e25c46c98d59"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
+  native_image_cropper_web:
+    dependency: transitive
+    description:
+      name: native_image_cropper_web
+      sha256: "4767ca067ff2b5d1d3dd02c14eb00124da5d203ff917c9528b35f294bcf9227e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.0"
   path:
     dependency: transitive
     description:
@@ -192,6 +264,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.0"
+  path_provider:
+    dependency: "direct main"
+    description:
+      name: path_provider
+      sha256: fec0d61223fba3154d87759e3cc27fe2c8dc498f6386c6d6fc80d1afdd1bf378
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.4"
+  path_provider_android:
+    dependency: transitive
+    description:
+      name: path_provider_android
+      sha256: c464428172cb986b758c6d1724c603097febb8fb855aa265aeecc9280c294d4a
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.12"
+  path_provider_foundation:
+    dependency: transitive
+    description:
+      name: path_provider_foundation
+      sha256: f234384a3fdd67f989b4d54a5d73ca2a6c422fa55ae694381ae0f4375cd1ea16
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.4.0"
+  path_provider_linux:
+    dependency: transitive
+    description:
+      name: path_provider_linux
+      sha256: f7a1fe3a634fe7734c8d3f2766ad746ae2a2884abe22e241a8b301bf5cac3279
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.1"
+  path_provider_platform_interface:
+    dependency: transitive
+    description:
+      name: path_provider_platform_interface
+      sha256: "88f5779f72ba699763fa3a3b06aa4bf6de76c8e5de842cf6f29e2e06476c2334"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.2"
+  path_provider_windows:
+    dependency: transitive
+    description:
+      name: path_provider_windows
+      sha256: bd6f00dbd873bfb70d0761682da2b3a2c2fccc2b9e84c495821639601d81afe7
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.3.0"
   permission_handler:
     dependency: "direct main"
     description:
@@ -240,6 +360,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.1"
+  platform:
+    dependency: transitive
+    description:
+      name: platform
+      sha256: "5d6b1b0036a5f331ebc77c850ebc8506cbc1e9416c27e59b439f917a902a4984"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.6"
   plugin_platform_interface:
     dependency: transitive
     description:
@@ -341,6 +469,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.5"
+  xdg_directories:
+    dependency: transitive
+    description:
+      name: xdg_directories
+      sha256: "7a3f37b05d989967cdddcbb571f1ea834867ae2faa29725fd085180e0883aa15"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
 sdks:
   dart: ">=3.5.3 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
+  flutter: ">=3.24.0"
