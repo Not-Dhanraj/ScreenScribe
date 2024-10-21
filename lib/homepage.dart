@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     if (homePort != null) return;
     final res = IsolateNameServer.registerPortWithName(
       _receivePort.sendPort,
@@ -45,6 +46,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("Height=${MediaQuery.of(context).size.height}"); //width
+
+    print("Width=${MediaQuery.of(context).size.width}"); //width
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Plugin example app'),

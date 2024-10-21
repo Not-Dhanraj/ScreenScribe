@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:on_screen_ocr/overlays/img.dart';
 
 class DragAndHoldExample extends StatefulWidget {
   const DragAndHoldExample({super.key});
@@ -18,7 +19,6 @@ class DragAndHoldExample extends StatefulWidget {
 
 class DragAndHoldExampleState extends State<DragAndHoldExample> {
   Offset finalPos = const Offset(100, 100);
-  Offset? initialPosition;
   Offset? initPos;
   Timer? holdTimer;
   bool isHolding = false;
@@ -66,7 +66,6 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
     return null;
   }
 
-  late int x1, x2, x3, x4, y1, y2, y3, y4;
   String? path;
 
 //TODO: Implement the onPanEnd method
@@ -74,9 +73,13 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
     if (isHolding) {
       holdTimer?.cancel();
       print('Drag ended at: $finalPos');
+
+      print("drag alls");
+      print((finalPos.dx - initPos!.dx) / 1);
+      print((finalPos.dy - initPos!.dy) / 1);
       isHolding = false;
       print(
-        "finalPos: $finalPos, initialPosition: $initialPosition, initPos: $initPos",
+        "finalPos: $finalPos, initPos: $initPos",
       );
       await Future.delayed(const Duration(milliseconds: 50));
 
@@ -93,14 +96,13 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
   }
 
   void onPanStart(DragStartDetails details) {
-    initialPosition = finalPos;
-    print('Drag started at: $initialPosition');
+    print('Drag started ');
     startHoldTimer(finalPos);
   }
 
   void onPanUpdate(DragUpdateDetails details) {
     setState(() {
-      finalPos += details.delta;
+      finalPos += details.globalPosition;
     });
 
     if (initPos != null && (finalPos - initPos!).distance > 10) {
@@ -120,18 +122,20 @@ class DragAndHoldExampleState extends State<DragAndHoldExample> {
     return Material(
       color: Colors.transparent,
       elevation: 0.0,
-      child: path != null
-          ? Image.file(File(path!))
-          : GestureDetector(
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              child: Icon(
-                Icons.location_on,
-                color: isHolding ? Colors.green : Colors.blue,
-                size: 40,
-              ),
-            ),
+      child:
+          // path != null
+          //     ? ImageCropper(imagePath: path!, offset1: initPos!, offset2: finalPos)
+          //     :
+          GestureDetector(
+        onPanStart: onPanStart,
+        onPanUpdate: onPanUpdate,
+        onPanEnd: onPanEnd,
+        child: Icon(
+          Icons.location_on,
+          color: isHolding ? Colors.green : Colors.blue,
+          size: 40,
+        ),
+      ),
     );
   }
 }
