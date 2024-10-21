@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_accessibility_service/constants.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:native_image_cropper/native_image_cropper.dart';
+import 'package:overlay_pop_up/overlay_pop_up.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 
@@ -81,7 +81,10 @@ class OverlayWidgetState extends State<OverlayWidget> {
         behavior: HitTestBehavior.opaque,
         onTap: () async {
           if (_currentShape == BoxShape.rectangle) {
-            await FlutterOverlayWindow.resizeOverlay(50, 100, true);
+            if (await OverlayPopUp.isActive()) {
+              await OverlayPopUp.updateOverlaySize(width: 100, height: 100);
+            }
+
             setState(() {
               _currentShape = BoxShape.circle;
             });
@@ -100,18 +103,21 @@ class OverlayWidgetState extends State<OverlayWidget> {
             setState(() {
               _currentShape = BoxShape.rectangle;
             });
-            await FlutterOverlayWindow.resizeOverlay(
-              // WindowSize.matchParent,
-              // WindowSize.matchParent,
-              410, 860,
-              false,
-            );
+            if (await OverlayPopUp.isActive()) {
+              await OverlayPopUp.updateOverlaySize();
+            }
+            // await FlutterOverlayWindow.resizeOverlay(
+            //   // WindowSize.matchParent,
+            //   // WindowSize.matchParent,
+            //   410, 860,
+            //   false,
+            // );
           }
         },
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.green,
             shape: _currentShape,
           ),
           child: Center(
@@ -124,11 +130,10 @@ class OverlayWidgetState extends State<OverlayWidget> {
                 _currentShape == BoxShape.rectangle
                     ? SingleChildScrollView(
                         child: Stack(
+                          fit: StackFit.loose,
                           alignment: Alignment.center,
                           children: [
                             SizedBox(
-                              height: 600,
-                              width: 400,
                               child: CropPreview(
                                 controller: controller,
                                 mode: CropMode.rect,
@@ -173,8 +178,12 @@ class OverlayWidgetState extends State<OverlayWidget> {
                                 //     ClipboardData(text: "your text to copy"));
 
                                 _currentShape = BoxShape.circle;
-                                await FlutterOverlayWindow.resizeOverlay(
-                                    50, 100, true);
+                                if (await OverlayPopUp.isActive()) {
+                                  await OverlayPopUp.updateOverlaySize(
+                                      width: 100, height: 100);
+                                }
+                                // await FlutterOverlayWindow.resizeOverlay(
+                                //     50, 100, true);
 
                                 setState(() {});
                               },

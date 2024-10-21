@@ -17,7 +17,9 @@
             <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="explanation_for_special_use"/>
         </service>
-
+        <service
+           android:name="com.requiemz.overlay_pop_up.OverlayService"
+           android:exported="false" />
 <service android:name="slayer.accessibility.service.flutter_accessibility_service.AccessibilityListener"
                 android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="false">
       <intent-filter>

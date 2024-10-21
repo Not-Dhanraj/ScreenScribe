@@ -8,14 +8,12 @@ void main() {
 }
 
 @pragma("vm:entry-point")
-void overlayMain() {
+void overlayPopUp() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: OverlayWidget(),
-    ),
-  );
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: Material(child: OverlayWidget()),
+  ));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:overlay_pop_up/overlay_pop_up.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
@@ -66,17 +67,11 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10.0),
             TextButton(
               onPressed: () async {
-                if (await FlutterOverlayWindow.isActive()) return;
-                await FlutterOverlayWindow.showOverlay(
-                  enableDrag: true,
-                  overlayTitle: "Ocr",
-                  overlayContent: 'Overlay Enabled',
-                  flag: OverlayFlag.defaultFlag,
-                  visibility: NotificationVisibility.visibilityPublic,
-                  positionGravity: PositionGravity.auto,
-                  height: 100,
-                  width: 100,
-                );
+                await OverlayPopUp.showOverlay(
+                    height: 100,
+                    width: 100,
+                    isDraggable: true,
+                    horizontalAlignment: Gravity.end);
               },
               child: const Text("Show Overlay"),
             ),
@@ -118,9 +113,9 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10.0),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
                 log('Try to close');
-                FlutterOverlayWindow.closeOverlay()
+                await OverlayPopUp.closeOverlay()
                     .then((value) => log('STOPPED: alue: $value'));
               },
               child: const Text("Close Overlay"),
