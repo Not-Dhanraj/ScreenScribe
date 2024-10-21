@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_accessibility_service/constants.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
 import 'package:flutter_overlay_window/flutter_overlay_window.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:native_image_cropper/native_image_cropper.dart';
 import 'package:path_provider/path_provider.dart';
@@ -90,21 +91,22 @@ class OverlayWidgetState extends State<OverlayWidget> {
               GlobalAction.globalActionTakeScreenshot,
             );
 
+            await Future.delayed(const Duration(milliseconds: 1000))
+                .then((value) async {
+              String? pth = await getLatestScreenshot();
+              path = pth;
+              loadImage(path!);
+            });
             await Future.delayed(const Duration(milliseconds: 500));
-            String? pth = await getLatestScreenshot();
-            path = pth;
-            loadImage(path!);
-            await Future.delayed(const Duration(milliseconds: 500));
-
+            setState(() {
+              _currentShape = BoxShape.rectangle;
+            });
             await FlutterOverlayWindow.resizeOverlay(
               // WindowSize.matchParent,
               // WindowSize.matchParent,
               410, 860,
               false,
             );
-            setState(() {
-              _currentShape = BoxShape.rectangle;
-            });
           }
         },
         child: Container(
@@ -158,10 +160,15 @@ class OverlayWidgetState extends State<OverlayWidget> {
                                   final RecognizedText recognizedText =
                                       await textRecognizer
                                           .processImage(inputImage);
-                                  await Clipboard.setData(
-                                      ClipboardData(text: recognizedText.text));
                                   print(recognizedText.text);
+
+                                  // await Clipboard.setData(
+                                  //     ClipboardData(text: "your text to copy"));
+
                                   _currentShape = BoxShape.circle;
+                                  await FlutterOverlayWindow.resizeOverlay(
+                                      50, 100, true);
+
                                   setState(() {});
                                 },
                               ),
