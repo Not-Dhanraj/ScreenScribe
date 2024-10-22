@@ -44,7 +44,6 @@ dependencies:
   path_provider: ^2.1.4
   super_clipboard: ^0.8.24
   overlay_pop_up: ^1.0.3
-  flutter_foreground_task: ^8.10.4
 
 dev_dependencies:
   flutter_test:

@@ -12,7 +12,7 @@ void overlayPopUp() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: Material(child: OverlayWidget()),
+    home: OverlayWidget(),
   ));
 }
 

@@ -21,13 +21,9 @@ class OverlayWidget extends StatefulWidget {
 }
 
 class OverlayWidgetState extends State<OverlayWidget> {
-  Color color = const Color(0xFFFFFFFF);
   BoxShape _currentShape = BoxShape.circle;
-  static const String _kPortNameHome = 'UI';
-  SendPort? homePort;
   String? path;
-  String? messageFromOverlay;
-  final controller = CropController();
+  late CropController controller;
   Uint8List? _imageBytes;
 
   Future<void> loadImage(String path) async {
@@ -47,7 +43,6 @@ class OverlayWidgetState extends State<OverlayWidget> {
   @override
   void initState() {
     super.initState();
-    if (homePort != null) return;
   }
 
   Future<String?> getLatestScreenshot() async {
@@ -78,7 +73,6 @@ class OverlayWidgetState extends State<OverlayWidget> {
       color: Colors.transparent,
       elevation: 0.0,
       child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
         onTap: () async {
           if (_currentShape == BoxShape.rectangle) {
             if (await OverlayPopUp.isActive()) {
@@ -92,33 +86,27 @@ class OverlayWidgetState extends State<OverlayWidget> {
             FlutterAccessibilityService.performGlobalAction(
               GlobalAction.globalActionTakeScreenshot,
             );
-
+            controller = CropController();
             await Future.delayed(const Duration(milliseconds: 1000))
                 .then((value) async {
               String? pth = await getLatestScreenshot();
               path = pth;
               loadImage(path!);
             });
-            await Future.delayed(const Duration(milliseconds: 500));
+            await Future.delayed(const Duration(milliseconds: 1000));
             setState(() {
               _currentShape = BoxShape.rectangle;
             });
             if (await OverlayPopUp.isActive()) {
               await OverlayPopUp.updateOverlaySize();
             }
-            // await FlutterOverlayWindow.resizeOverlay(
-            //   // WindowSize.matchParent,
-            //   // WindowSize.matchParent,
-            //   410, 860,
-            //   false,
-            // );
           }
         },
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             color: Colors.green,
-            shape: _currentShape,
+            shape: BoxShape.rectangle,
           ),
           child: Center(
             child:
@@ -128,30 +116,28 @@ class OverlayWidgetState extends State<OverlayWidget> {
                 //   crossAxisAlignment: CrossAxisAlignment.center,
                 //   children: [
                 _currentShape == BoxShape.rectangle
-                    ? SingleChildScrollView(
-                        child: Stack(
-                          fit: StackFit.loose,
-                          alignment: Alignment.center,
-                          children: [
-                            SizedBox(
-                              child: CropPreview(
-                                controller: controller,
-                                mode: CropMode.rect,
-                                bytes: _imageBytes!,
-                                dragPointSize: 20,
-                                hitSize: 20,
-                                dragPointBuilder: (size, position) {
-                                  if (position ==
-                                      CropDragPointPosition.topLeft) {
-                                    return CropDragPoint(
-                                        size: size, color: Colors.red);
-                                  }
+                    ? Stack(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: CropPreview(
+                              controller: controller,
+                              mode: CropMode.rect,
+                              bytes: _imageBytes!,
+                              dragPointSize: 20,
+                              hitSize: 20,
+                              dragPointBuilder: (size, position) {
+                                if (position == CropDragPointPosition.topLeft) {
                                   return CropDragPoint(
-                                      size: size, color: Colors.blue);
-                                },
-                              ),
+                                      size: size, color: Colors.red);
+                                }
+                                return CropDragPoint(
+                                    size: size, color: Colors.blue);
+                              },
                             ),
-                            IconButton(
+                          ),
+                          Center(
+                            child: IconButton(
                               icon: Icon(Icons.crop),
                               onPressed: () async {
                                 final croppedBytes = await controller.crop();
@@ -186,10 +172,13 @@ class OverlayWidgetState extends State<OverlayWidget> {
                                 //     50, 100, true);
 
                                 setState(() {});
+                                _imageBytes = null;
+                                path = null;
+                                controller.dispose();
                               },
-                            )
-                          ],
-                        ),
+                            ),
+                          )
+                        ],
                       )
                     : const SizedBox.shrink(),
             //   _currentShape == BoxShape.rectangle
