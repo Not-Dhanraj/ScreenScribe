@@ -10,7 +10,7 @@ Check out this video showcasing the working implementation of the app:
 
 
 
-![](https://github.com/user-attachments/assets/ecc07e34-e652-49e1-ba71-749d8c332a13)
+https://github.com/user-attachments/assets/ecc07e34-e652-49e1-ba71-749d8c332a13
 
 
 
