@@ -71,6 +71,7 @@ class _HomePageState extends State<HomePage> {
                     height: 100,
                     width: 100,
                     isDraggable: true,
+                    verticalAlignment: Gravity.end,
                     horizontalAlignment: Gravity.end);
               },
               child: const Text("Show Overlay"),

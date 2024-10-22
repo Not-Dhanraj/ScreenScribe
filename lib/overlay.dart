@@ -75,19 +75,19 @@ class OverlayWidgetState extends State<OverlayWidget> {
       child: GestureDetector(
         onTap: () async {
           if (_currentShape == BoxShape.rectangle) {
-            if (await OverlayPopUp.isActive()) {
-              await OverlayPopUp.updateOverlaySize(width: 100, height: 100);
-            }
+            // if (await OverlayPopUp.isActive()) {
+            //   await OverlayPopUp.updateOverlaySize(width: 100, height: 100);
+            // }
 
-            setState(() {
-              _currentShape = BoxShape.circle;
-            });
+            // setState(() {
+            //   _currentShape = BoxShape.circle;
+            // });
           } else {
             FlutterAccessibilityService.performGlobalAction(
               GlobalAction.globalActionTakeScreenshot,
             );
             controller = CropController();
-            await Future.delayed(const Duration(milliseconds: 1000))
+            await Future.delayed(const Duration(milliseconds: 1500))
                 .then((value) async {
               String? pth = await getLatestScreenshot();
               path = pth;
@@ -116,69 +116,111 @@ class OverlayWidgetState extends State<OverlayWidget> {
                 //   crossAxisAlignment: CrossAxisAlignment.center,
                 //   children: [
                 _currentShape == BoxShape.rectangle
-                    ? Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(15.0),
-                            child: CropPreview(
-                              controller: controller,
-                              mode: CropMode.rect,
-                              bytes: _imageBytes!,
-                              dragPointSize: 20,
-                              hitSize: 20,
-                              dragPointBuilder: (size, position) {
-                                if (position == CropDragPointPosition.topLeft) {
+                    ? PopScope(
+                        canPop: false,
+                        onPopInvokedWithResult: (didPop, result) async {
+                          if (await OverlayPopUp.isActive()) {
+                            await OverlayPopUp.updateOverlaySize(
+                                width: 100, height: 100);
+                          }
+
+                          setState(() {
+                            _currentShape = BoxShape.circle;
+                          });
+                        },
+                        child: Stack(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: CropPreview(
+                                controller: controller,
+                                mode: CropMode.rect,
+                                bytes: _imageBytes!,
+                                dragPointSize: 20,
+                                hitSize: 20,
+                                dragPointBuilder: (size, position) {
+                                  if (position ==
+                                      CropDragPointPosition.topLeft) {
+                                    return CropDragPoint(
+                                        size: size, color: Colors.red);
+                                  }
                                   return CropDragPoint(
-                                      size: size, color: Colors.red);
-                                }
-                                return CropDragPoint(
-                                    size: size, color: Colors.blue);
-                              },
+                                      size: size, color: Colors.blue);
+                                },
+                              ),
                             ),
-                          ),
-                          Center(
-                            child: IconButton(
-                              icon: Icon(Icons.crop),
-                              onPressed: () async {
-                                final croppedBytes = await controller.crop();
-                                var tmpFile =
-                                    await _createTempFile(croppedBytes);
-                                var file = tmpFile;
-                                final inputImage = InputImage.fromFile(file);
-                                final textRecognizer = TextRecognizer(
-                                    script: TextRecognitionScript.latin);
-                                final RecognizedText recognizedText =
-                                    await textRecognizer
-                                        .processImage(inputImage);
-                                print(recognizedText.text);
-                                final clipboard = SystemClipboard.instance;
-                                if (clipboard == null) {
-                                  print("lul");
-                                  return; // Clipboard API is not supported on this platform.
-                                }
-                                final item = DataWriterItem();
-                                item.add(
-                                    Formats.plainText(recognizedText.text));
-                                await clipboard.write([item]);
-                                // await Clipboard.setData(
-                                //     ClipboardData(text: "your text to copy"));
+                            Positioned.fill(
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    IconButton(
+                                      icon: Icon(Icons.cancel),
+                                      onPressed: () async {
+                                        _currentShape = BoxShape.circle;
+                                        if (await OverlayPopUp.isActive()) {
+                                          await OverlayPopUp.updateOverlaySize(
+                                              width: 100, height: 100);
+                                        }
+                                        // await FlutterOverlayWindow.resizeOverlay(
+                                        //     50, 100, true);
 
-                                _currentShape = BoxShape.circle;
-                                if (await OverlayPopUp.isActive()) {
-                                  await OverlayPopUp.updateOverlaySize(
-                                      width: 100, height: 100);
-                                }
-                                // await FlutterOverlayWindow.resizeOverlay(
-                                //     50, 100, true);
+                                        setState(() {});
+                                        _imageBytes = null;
+                                        path = null;
+                                        controller.dispose();
+                                      },
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.crop),
+                                      onPressed: () async {
+                                        final croppedBytes =
+                                            await controller.crop();
+                                        var tmpFile =
+                                            await _createTempFile(croppedBytes);
+                                        var file = tmpFile;
+                                        final inputImage =
+                                            InputImage.fromFile(file);
+                                        final textRecognizer = TextRecognizer(
+                                            script:
+                                                TextRecognitionScript.latin);
+                                        final RecognizedText recognizedText =
+                                            await textRecognizer
+                                                .processImage(inputImage);
+                                        print(recognizedText.text);
+                                        final clipboard =
+                                            SystemClipboard.instance;
+                                        if (clipboard == null) {
+                                          print("lul");
+                                          return; // Clipboard API is not supported on this platform.
+                                        }
+                                        final item = DataWriterItem();
+                                        item.add(Formats.plainText(
+                                            recognizedText.text));
+                                        await clipboard.write([item]);
+                                        // await Clipboard.setData(
+                                        //     ClipboardData(text: "your text to copy"));
 
-                                setState(() {});
-                                _imageBytes = null;
-                                path = null;
-                                controller.dispose();
-                              },
-                            ),
-                          )
-                        ],
+                                        _currentShape = BoxShape.circle;
+                                        if (await OverlayPopUp.isActive()) {
+                                          await OverlayPopUp.updateOverlaySize(
+                                              width: 100, height: 100);
+                                        }
+                                        // await FlutterOverlayWindow.resizeOverlay(
+                                        //     50, 100, true);
+
+                                        setState(() {});
+                                        _imageBytes = null;
+                                        path = null;
+                                        controller.dispose();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       )
                     : const SizedBox.shrink(),
             //   _currentShape == BoxShape.rectangle
