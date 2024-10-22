@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:on_screen_ocr/homepage.dart';
-import 'package:on_screen_ocr/overlays/main_overlay.dart';
+import 'package:on_screen_ocr/overlay.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -8,14 +8,12 @@ void main() {
 }
 
 @pragma("vm:entry-point")
-void overlayMain() {
+void overlayPopUp() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: DragAndHoldExample(),
-    ),
-  );
+  runApp(const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: OverlayWidget(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
