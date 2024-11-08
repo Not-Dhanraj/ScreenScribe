@@ -6,7 +6,6 @@ import 'package:overlay_pop_up/overlay_pop_up.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_accessibility_service/flutter_accessibility_service.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -119,14 +118,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Plugin example app'),
+        title: const Text('ScreenScribe'),
       ),
       body: Center(
         child: Column(
           children: [
             TextButton(
               onPressed: () async {
-                final status = await FlutterOverlayWindow.isPermissionGranted();
+                final status = await OverlayPopUp.checkPermission();
                 log("Is Permission Granted: $status");
               },
               child: const Text("Check Permission"),
@@ -134,8 +133,8 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 10.0),
             TextButton(
               onPressed: () async {
-                final bool? res =
-                    await FlutterOverlayWindow.requestPermission();
+                final bool res = await OverlayPopUp.requestPermission();
+
                 log("status: $res");
               },
               child: const Text("Request Permission"),
@@ -143,8 +142,8 @@ class _HomePageState extends State<HomePage> {
             TextButton(
               onPressed: () async {
                 requestNotificationsPermission();
-                final bool? res =
-                    await FlutterOverlayWindow.requestPermission();
+                final bool res = await OverlayPopUp.requestPermission();
+
                 log("status: $res");
               },
               child: const Text("Test Thing"),

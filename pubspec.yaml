@@ -37,7 +37,6 @@ dependencies:
       url: https://github.com/fahimfoysal2/flutter_accessibility_service.git
       ref: develop
   flutter_foreground_task: ^8.13.0
-  flutter_overlay_window: ^0.4.5
   google_mlkit_text_recognition: ^0.14.0
   native_image_cropper: ^0.6.0
   overlay_pop_up: ^1.0.3
