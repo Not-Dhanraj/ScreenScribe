@@ -1,4 +1,4 @@
-package com.example.on_screen_ocr
+package dev.notDhanraj.scribe
 
 import io.flutter.embedding.android.FlutterActivity
 

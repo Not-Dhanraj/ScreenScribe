@@ -28,11 +28,10 @@ class FirstTaskHandler extends TaskHandler {
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {
     await OverlayPopUp.showOverlay(
-        height: 100,
-        width: 100,
-        isDraggable: true,
-        verticalAlignment: Gravity.end,
-        horizontalAlignment: Gravity.end);
+      height: 100,
+      width: 100,
+      isDraggable: true,
+    );
     print("Done");
   }
 }

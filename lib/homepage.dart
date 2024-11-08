@@ -149,7 +149,6 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text("Test Thing"),
             ),
-            const SizedBox(height: 10.0),
             TextButton(
               onPressed: () async {
                 await FlutterAccessibilityService.getSystemActions();
@@ -181,25 +180,6 @@ class _HomePageState extends State<HomePage> {
                 _requestStoragePermission();
               },
               child: const Text("req storage permission"),
-            ),
-            const SizedBox(height: 10.0),
-            TextButton(
-              onPressed: () async {
-                final status = await FlutterOverlayWindow.isActive();
-                log("Is Active?: $status");
-              },
-              child: const Text("Is Active?"),
-            ),
-            const SizedBox(height: 10.0),
-            TextButton(
-              onPressed: () async {
-                await FlutterOverlayWindow.resizeOverlay(
-                  WindowSize.matchParent,
-                  (MediaQuery.of(context).size.height * 5).toInt(),
-                  false,
-                );
-              },
-              child: const Text("Update Overlay"),
             ),
             const SizedBox(height: 10.0),
             TextButton(
