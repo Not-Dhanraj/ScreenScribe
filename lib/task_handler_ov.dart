@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
-
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
-import 'package:flutter_overlay_window/flutter_overlay_window.dart';
 import 'package:overlay_pop_up/overlay_pop_up.dart';
 
 class FirstTaskHandler extends TaskHandler {
@@ -12,8 +10,6 @@ class FirstTaskHandler extends TaskHandler {
 
   void startCameraStream() {}
 
-  @override
-  @override
   Future<void> onEvent(DateTime timestamp, SendPort? sendPort) async {}
 
   @override
@@ -22,15 +18,12 @@ class FirstTaskHandler extends TaskHandler {
     await FlutterForegroundTask.clearAllData();
   }
 
-  @override
   void onButtonPressed(String id) {
     log('onButtonPressed >> $id -- $updateCount');
   }
 
   @override
-  void onRepeatEvent(DateTime timestamp) {
-    // TODO: implement onRepeatEvent
-  }
+  void onRepeatEvent(DateTime timestamp) {}
 
   @override
   Future<void> onStart(DateTime timestamp, TaskStarter starter) async {

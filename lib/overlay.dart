@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -195,7 +196,7 @@ class OverlayWidgetState extends State<OverlayWidget> {
                                             MainAxisAlignment.center,
                                         children: [
                                           IconButton(
-                                            icon: Icon(Icons.cancel),
+                                            icon: const Icon(Icons.cancel),
                                             onPressed: () async {
                                               _currentShape = BoxShape.circle;
                                               if (await OverlayPopUp
@@ -215,7 +216,7 @@ class OverlayWidgetState extends State<OverlayWidget> {
                                             },
                                           ),
                                           IconButton(
-                                            icon: Icon(Icons.crop),
+                                            icon: const Icon(Icons.crop),
                                             onPressed: () async {
                                               final croppedBytes =
                                                   await controller.crop();
