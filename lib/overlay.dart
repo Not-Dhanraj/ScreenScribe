@@ -105,8 +105,9 @@ class OverlayWidgetState extends State<OverlayWidget> {
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
-            color: Colors.green,
-            shape: BoxShape.rectangle,
+            color:
+                _currentShape == BoxShape.circle ? Colors.green : Colors.grey,
+            shape: _currentShape,
           ),
           child: Center(
             child:
@@ -150,79 +151,102 @@ class OverlayWidgetState extends State<OverlayWidget> {
                               ),
                             ),
                             Positioned.fill(
-                              child: Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    IconButton(
-                                      icon: Icon(Icons.cancel),
-                                      onPressed: () async {
-                                        _currentShape = BoxShape.circle;
-                                        if (await OverlayPopUp.isActive()) {
-                                          await OverlayPopUp.updateOverlaySize(
-                                              width: 100, height: 100);
-                                        }
-                                        // await FlutterOverlayWindow.resizeOverlay(
-                                        //     50, 100, true);
+                              child: OverflowBox(
+                                maxWidth: double.infinity,
+                                child: Align(
+                                  alignment: Alignment.bottomRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: Card(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.cancel),
+                                            onPressed: () async {
+                                              _currentShape = BoxShape.circle;
+                                              if (await OverlayPopUp
+                                                  .isActive()) {
+                                                await OverlayPopUp
+                                                    .updateOverlaySize(
+                                                        width: 100,
+                                                        height: 100);
+                                              }
+                                              // await FlutterOverlayWindow.resizeOverlay(
+                                              //     50, 100, true);
 
-                                        setState(() {});
-                                        _imageBytes = null;
-                                        path = null;
-                                        controller.dispose();
-                                      },
+                                              setState(() {});
+                                              _imageBytes = null;
+                                              path = null;
+                                              controller.dispose();
+                                            },
+                                          ),
+                                          IconButton(
+                                            icon: Icon(Icons.crop),
+                                            onPressed: () async {
+                                              final croppedBytes =
+                                                  await controller.crop();
+                                              var tmpFile =
+                                                  await _createTempFile(
+                                                      croppedBytes);
+                                              var file = tmpFile;
+                                              final inputImage =
+                                                  InputImage.fromFile(file);
+                                              final textRecognizer =
+                                                  TextRecognizer(
+                                                      script:
+                                                          TextRecognitionScript
+                                                              .latin);
+                                              final RecognizedText
+                                                  recognizedText =
+                                                  await textRecognizer
+                                                      .processImage(inputImage);
+                                              print(recognizedText.text);
+                                              final clipboard =
+                                                  SystemClipboard.instance;
+                                              if (clipboard == null) {
+                                                print("lul");
+                                                return; // Clipboard API is not supported on this platform.
+                                              }
+                                              final item = DataWriterItem();
+                                              item.add(Formats.plainText(
+                                                  recognizedText.text));
+                                              await clipboard.write([item]);
+                                              // await Clipboard.setData(
+                                              //     ClipboardData(text: "your text to copy"));
+
+                                              _currentShape = BoxShape.circle;
+                                              if (await OverlayPopUp
+                                                  .isActive()) {
+                                                await OverlayPopUp
+                                                    .updateOverlaySize(
+                                                        width: 100,
+                                                        height: 100);
+                                              }
+                                              // await FlutterOverlayWindow.resizeOverlay(
+                                              //     50, 100, true);
+
+                                              setState(() {});
+                                              _imageBytes = null;
+                                              path = null;
+                                              controller.dispose();
+                                            },
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    IconButton(
-                                      icon: Icon(Icons.crop),
-                                      onPressed: () async {
-                                        final croppedBytes =
-                                            await controller.crop();
-                                        var tmpFile =
-                                            await _createTempFile(croppedBytes);
-                                        var file = tmpFile;
-                                        final inputImage =
-                                            InputImage.fromFile(file);
-                                        final textRecognizer = TextRecognizer(
-                                            script:
-                                                TextRecognitionScript.latin);
-                                        final RecognizedText recognizedText =
-                                            await textRecognizer
-                                                .processImage(inputImage);
-                                        print(recognizedText.text);
-                                        final clipboard =
-                                            SystemClipboard.instance;
-                                        if (clipboard == null) {
-                                          print("lul");
-                                          return; // Clipboard API is not supported on this platform.
-                                        }
-                                        final item = DataWriterItem();
-                                        item.add(Formats.plainText(
-                                            recognizedText.text));
-                                        await clipboard.write([item]);
-                                        // await Clipboard.setData(
-                                        //     ClipboardData(text: "your text to copy"));
-
-                                        _currentShape = BoxShape.circle;
-                                        if (await OverlayPopUp.isActive()) {
-                                          await OverlayPopUp.updateOverlaySize(
-                                              width: 100, height: 100);
-                                        }
-                                        // await FlutterOverlayWindow.resizeOverlay(
-                                        //     50, 100, true);
-
-                                        setState(() {});
-                                        _imageBytes = null;
-                                        path = null;
-                                        controller.dispose();
-                                      },
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             )
                           ],
                         ),
                       )
-                    : const SizedBox.shrink(),
+                    : const Icon(
+                        Icons.circle_outlined,
+                        color: Colors.white,
+                      ),
             //   _currentShape == BoxShape.rectangle
             //       ? messageFromOverlay == null
             //           ? const FlutterLogo()
