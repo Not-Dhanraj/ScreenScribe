@@ -1,6 +1,11 @@
 import 'dart:developer';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
+import 'package:flutter_foreground_task/models/notification_permission.dart';
+import 'package:on_screen_ocr/main.dart';
+import 'package:on_screen_ocr/task_handler_ov.dart';
 import 'package:overlay_pop_up/overlay_pop_up.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/material.dart';
@@ -21,22 +26,103 @@ class _HomePageState extends State<HomePage> {
   SendPort? homePort;
   String? latestMessageFromOverlay;
 
+  Future<void> _requestPermissions() async {
+    // Android 13+, you need to allow notification permission to display foreground service notification.
+    //
+    // iOS: If you need notification, ask for permission.
+    final NotificationPermission notificationPermission =
+        await FlutterForegroundTask.checkNotificationPermission();
+    if (notificationPermission != NotificationPermission.granted) {
+      await FlutterForegroundTask.requestNotificationPermission();
+    }
+
+    if (Platform.isAndroid) {
+      // Android 12+, there are restrictions on starting a foreground service.
+      //
+      // To restart the service on device reboot or unexpected problem, you need to allow below permission.
+      if (!await FlutterForegroundTask.isIgnoringBatteryOptimizations) {
+        // This function requires `android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` permission.
+        await FlutterForegroundTask.requestIgnoreBatteryOptimization();
+      }
+
+      // Use this utility only if you provide services that require long-term survival,
+      // such as exact alarm service, healthcare service, or Bluetooth communication.
+      //
+      // This utility requires the "android.permission.SCHEDULE_EXACT_ALARM" permission.
+      // Using this permission may make app distribution difficult due to Google policy.
+      // if (!await FlutterForegroundTask.canScheduleExactAlarms) {
+      //   // When you call this function, will be gone to the settings page.
+      //   // So you need to explain to the user why set it.
+      //   await FlutterForegroundTask.openAlarmsAndRemindersSettings();
+      // }
+    }
+  }
+
+  Future<ServiceRequestResult> _stopService() async {
+    return FlutterForegroundTask.stopService();
+  }
+
+  void _initService() {
+    FlutterForegroundTask.init(
+      androidNotificationOptions: AndroidNotificationOptions(
+        channelId: 'foreground_service',
+        channelName: 'Foreground Service Notification',
+        channelDescription:
+            'This notification appears when the foreground service is running.',
+        onlyAlertOnce: true,
+      ),
+      iosNotificationOptions: const IOSNotificationOptions(
+        showNotification: false,
+        playSound: false,
+      ),
+      foregroundTaskOptions: ForegroundTaskOptions(
+        eventAction: ForegroundTaskEventAction.once(),
+        autoRunOnBoot: true,
+        autoRunOnMyPackageReplaced: false,
+        allowWakeLock: false,
+        allowWifiLock: false,
+      ),
+    );
+  }
+
+  Future<void> requestNotificationsPermission() async {
+    await FlutterAccessibilityService.getSystemActions();
+    var hasAccessibilityPermission =
+        await FlutterAccessibilityService.isAccessibilityPermissionEnabled();
+    if (!hasAccessibilityPermission) {
+      hasAccessibilityPermission =
+          await FlutterAccessibilityService.requestAccessibilityPermission();
+    }
+    if (hasAccessibilityPermission) {
+      await FlutterAccessibilityService.getSystemActions();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-
-    if (homePort != null) return;
-    final res = IsolateNameServer.registerPortWithName(
-      _receivePort.sendPort,
-      _kPortNameHome,
-    );
-    log("$res: OVERLAY");
-    _receivePort.listen((message) {
-      log("message from OVERLAY: $message");
-      setState(() {
-        latestMessageFromOverlay = 'Latest Message From Overlay: $message';
-      });
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // Request permissions and initialize the service.
+      await _requestPermissions();
+      _initService();
     });
+  }
+
+  Future<ServiceRequestResult> _startService() async {
+    if (await FlutterForegroundTask.isRunningService) {
+      return FlutterForegroundTask.restartService();
+    } else {
+      return FlutterForegroundTask.startService(
+        serviceId: 256,
+        notificationTitle: 'Foreground Service is running',
+        notificationText: 'Tap to return to the app',
+        notificationIcon: null,
+        notificationButtons: [
+          const NotificationButton(id: 'btn_hello', text: 'hello'),
+        ],
+        callback: startCallback,
+      );
+    }
   }
 
   @override
@@ -64,15 +150,28 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text("Request Permission"),
             ),
+            TextButton(
+              onPressed: () async {
+                requestNotificationsPermission();
+                final bool? res =
+                    await FlutterOverlayWindow.requestPermission();
+                log("status: $res");
+              },
+              child: const Text("Test Thing"),
+            ),
             const SizedBox(height: 10.0),
             TextButton(
               onPressed: () async {
-                await OverlayPopUp.showOverlay(
-                    height: 100,
-                    width: 100,
-                    isDraggable: true,
-                    verticalAlignment: Gravity.end,
-                    horizontalAlignment: Gravity.end);
+                await FlutterAccessibilityService.getSystemActions();
+
+                _startService();
+
+                // await OverlayPopUp.showOverlay(
+                //     height: 100,
+                //     width: 100,
+                //     isDraggable: true,
+                //     verticalAlignment: Gravity.end,
+                //     horizontalAlignment: Gravity.end);
               },
               child: const Text("Show Overlay"),
             ),
@@ -116,8 +215,9 @@ class _HomePageState extends State<HomePage> {
             TextButton(
               onPressed: () async {
                 log('Try to close');
-                await OverlayPopUp.closeOverlay()
-                    .then((value) => log('STOPPED: alue: $value'));
+                _stopService();
+                await OverlayPopUp.closeOverlay();
+                // .then((value) => log('STOPPED: alue: $value'));
               },
               child: const Text("Close Overlay"),
             ),

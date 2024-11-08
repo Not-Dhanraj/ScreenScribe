@@ -1,8 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'dart:io';
-import 'dart:isolate';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_accessibility_service/constants.dart';
@@ -10,7 +10,6 @@ import 'package:flutter_accessibility_service/flutter_accessibility_service.dart
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:native_image_cropper/native_image_cropper.dart';
 import 'package:overlay_pop_up/overlay_pop_up.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 
 class OverlayWidget extends StatefulWidget {
@@ -22,7 +21,7 @@ class OverlayWidget extends StatefulWidget {
 
 class OverlayWidgetState extends State<OverlayWidget> {
   BoxShape _currentShape = BoxShape.circle;
-  String? path;
+  String? screenshotPath;
   late CropController controller;
   Uint8List? _imageBytes;
 
@@ -45,10 +44,42 @@ class OverlayWidgetState extends State<OverlayWidget> {
     super.initState();
   }
 
+  Future<Directory?> getScreenshotDirectory() async {
+    // Get the external storage directory
+    Directory? externalStorageDirectory = await getExternalStorageDirectory();
+
+    if (externalStorageDirectory != null) {
+      // Construct the path for the screenshot directory using `path.join`
+      String screenshotsPath = path.join(
+        externalStorageDirectory.parent.parent.parent.parent.path,
+        "Pictures",
+        "Screenshots",
+      );
+
+      // Check if the directory exists
+      if (Directory(screenshotsPath).existsSync()) {
+        return Directory(screenshotsPath);
+      } else {
+        // Try DCIM/Screenshots as an alternative
+        screenshotsPath = path.join(
+          externalStorageDirectory.parent.parent.parent.parent.path,
+          "DCIM",
+          "Screenshots",
+        );
+
+        if (Directory(screenshotsPath).existsSync()) {
+          return Directory(screenshotsPath);
+        }
+      }
+    }
+    return null; // If the directory doesn't exist or isn't accessible
+  }
+
   Future<String?> getLatestScreenshot() async {
+    final Directory? dir = await getScreenshotDirectory();
     // Try using MediaStore to get latest screenshot from Pictures/Screenshots directory.
-    final screenshotsDir =
-        Directory('/storage/emulated/0/Pictures/Screenshots');
+    final Directory screenshotsDir =
+        dir ?? Directory('/storage/emulated/0/Pictures/Screenshots');
 
     if (await screenshotsDir.exists()) {
       List<FileSystemEntity> files = screenshotsDir.listSync();
@@ -64,6 +95,7 @@ class OverlayWidgetState extends State<OverlayWidget> {
         return files.first.path;
       }
     }
+
     return null;
   }
 
@@ -90,8 +122,8 @@ class OverlayWidgetState extends State<OverlayWidget> {
             await Future.delayed(const Duration(milliseconds: 1500))
                 .then((value) async {
               String? pth = await getLatestScreenshot();
-              path = pth;
-              loadImage(path!);
+              screenshotPath = pth;
+              loadImage(screenshotPath!);
             });
             await Future.delayed(const Duration(milliseconds: 1000));
             setState(() {
@@ -178,7 +210,7 @@ class OverlayWidgetState extends State<OverlayWidget> {
 
                                               setState(() {});
                                               _imageBytes = null;
-                                              path = null;
+                                              screenshotPath = null;
                                               controller.dispose();
                                             },
                                           ),
@@ -229,7 +261,7 @@ class OverlayWidgetState extends State<OverlayWidget> {
 
                                               setState(() {});
                                               _imageBytes = null;
-                                              path = null;
+                                              screenshotPath = null;
                                               controller.dispose();
                                             },
                                           ),
