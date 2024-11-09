@@ -18,6 +18,11 @@
 |---------------------------------------------|---------------------------------------------|
 | ![Photo 3](https://raw.githubusercontent.com/Not-Dhanraj/ScreenScribe/refs/heads/main/showcase/Screenshot_1731144453.png) | ![Photo 4](https://raw.githubusercontent.com/Not-Dhanraj/ScreenScribe/refs/heads/main/showcase/Screenshot_1731144437.png) |
 
+## Videos
+
+https://github.com/user-attachments/assets/935c4472-aa43-482c-b3bb-f6e372ee85ee
+
+
 
 ## Installation
 
