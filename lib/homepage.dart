@@ -119,26 +119,59 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ScreenScribe'),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await _startService();
+            },
+            icon: const Icon(Icons.play_arrow),
+          ),
+          IconButton(
+            onPressed: () async {
+              await OverlayPopUp.closeOverlay();
+              await _stopService();
+            },
+            icon: const Icon(Icons.stop),
+          ),
+          IconButton(
+            onPressed: () async {
+              showAboutDialog(
+                context: context,
+                applicationIcon: SizedBox(
+                    height: 100,
+                    width: 100,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Image.asset('assets/icon.png'))),
+                applicationName: 'ScreenScribe',
+                applicationVersion: '1.0.0',
+                applicationLegalese:
+                    'This is a simple OCR app that uses the screenshots to capture text and copies it to clipboard.',
+              );
+            },
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+        ],
       ),
       body: Center(
         child: Column(
           children: [
-            TextButton(
-              onPressed: () async {
-                final status = await OverlayPopUp.checkPermission();
-                log("Is Permission Granted: $status");
-              },
-              child: const Text("Check Permission"),
-            ),
-            const SizedBox(height: 10.0),
-            TextButton(
-              onPressed: () async {
-                final bool res = await OverlayPopUp.requestPermission();
+            // TextButton(
+            //   onPressed: () async {
+            //     final status = await OverlayPopUp.checkPermission();
+            //     log("Is Permission Granted: $status");
+            //   },
+            //   child: const Text("Check Permission"),
+            // ),
+            // TextButton(
+            //   onPressed: () async {
+            //     final bool res = await OverlayPopUp.requestPermission();
 
-                log("status: $res");
-              },
-              child: const Text("Request Permission"),
-            ),
+            //     log("status: $res");
+            //   },
+            //   child: const Text("Request Permission"),
+            // ),
             TextButton(
               onPressed: () async {
                 requestNotificationsPermission();
@@ -146,41 +179,32 @@ class _HomePageState extends State<HomePage> {
 
                 log("status: $res");
               },
-              child: const Text("Test Thing"),
+              child: const Text("Request AOT and Accessibility"),
             ),
             TextButton(
               onPressed: () async {
                 await FlutterAccessibilityService.getSystemActions();
-
                 _startService();
-
-                // await OverlayPopUp.showOverlay(
-                //     height: 100,
-                //     width: 100,
-                //     isDraggable: true,
-                //     verticalAlignment: Gravity.end,
-                //     horizontalAlignment: Gravity.end);
               },
               child: const Text("Show Overlay"),
             ),
-            TextButton(
-              onPressed: () async {
-                final bool status = await FlutterAccessibilityService
-                    .isAccessibilityPermissionEnabled();
-                if (!status) {
-                  await FlutterAccessibilityService
-                      .requestAccessibilityPermission();
-                }
-              },
-              child: const Text("req accessibility"),
-            ),
+            // TextButton(
+            //   onPressed: () async {
+            //     final bool status = await FlutterAccessibilityService
+            //         .isAccessibilityPermissionEnabled();
+            //     if (!status) {
+            //       await FlutterAccessibilityService
+            //           .requestAccessibilityPermission();
+            //     }
+            //   },
+            //   child: const Text("req accessibility"),
+            // ),
             TextButton(
               onPressed: () async {
                 _requestStoragePermission();
               },
               child: const Text("req storage permission"),
             ),
-            const SizedBox(height: 10.0),
             TextButton(
               onPressed: () async {
                 log('Try to close');
@@ -190,7 +214,6 @@ class _HomePageState extends State<HomePage> {
               },
               child: const Text("Close Overlay"),
             ),
-            const SizedBox(height: 20.0),
           ],
         ),
       ),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:overlay_pop_up/overlay_pop_up.dart';
 
@@ -32,6 +33,8 @@ class FirstTaskHandler extends TaskHandler {
       width: 100,
       isDraggable: true,
     );
-    print("Done");
+    if (kDebugMode) {
+      print("Done");
+    }
   }
 }
