@@ -82,6 +82,14 @@ We welcome contributions to **ScreenScribe**! If you’d like to add features, f
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+   
+    
+### Views counter
+<div align="center">
+        <img alt="Visitor Stats" 
+            src="https://widgetbite.com/stats/not-dhanraj"/>  
+    </div>
+
 
 <!-- ## Contact
 
