@@ -1,4 +1,4 @@
-# On Screen Ocr app (Alpha)
+# ScreenScribe (Alpha)
 
 This Flutter app provides an overlay icon that remains on the screen while navigating other apps or system UI. Upon tapping the icon, the app takes a screenshot of the current screen. It then opens a cropping interface where the user can select a portion of the screenshot. Once the cropping is done, the app extracts text from the selected portion using Optical Character Recognition (OCR) using google ml toolkit.
 
