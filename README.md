@@ -14,7 +14,10 @@
 
 ## Screenshots
 
-_Add screenshots here once the app UI is ready._
+| ![Photo 1](https://raw.githubusercontent.com/Not-Dhanraj/ScreenScribe/refs/heads/main/showcase/Screenshot_1731144377.png) | ![Photo 2](https://raw.githubusercontent.com/Not-Dhanraj/ScreenScribe/refs/heads/main/showcase/Screenshot_1731144389.png) |
+|---------------------------------------------|---------------------------------------------|
+| ![Photo 3](https://raw.githubusercontent.com/Not-Dhanraj/ScreenScribe/refs/heads/main/showcase/Screenshot_1731144453.png) | ![Photo 4](https://raw.githubusercontent.com/Not-Dhanraj/ScreenScribe/refs/heads/main/showcase/Screenshot_1731144437.png) |
+
 
 ## Installation
 
