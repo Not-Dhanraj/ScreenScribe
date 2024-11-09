@@ -23,6 +23,7 @@ class OverlayWidget extends StatefulWidget {
 class OverlayWidgetState extends State<OverlayWidget> {
   BoxShape _currentShape = BoxShape.circle;
   String? screenshotPath;
+  late Directory screenshotsDir;
   late CropController controller;
   Uint8List? _imageBytes;
 
@@ -43,25 +44,28 @@ class OverlayWidgetState extends State<OverlayWidget> {
   @override
   void initState() {
     super.initState();
+    initDir();
+  }
+
+  void initDir() async {
+    final Directory? dir = await getScreenshotDirectory();
+    screenshotsDir =
+        dir ?? Directory('/storage/emulated/0/Pictures/Screenshots');
   }
 
   Future<Directory?> getScreenshotDirectory() async {
-    // Get the external storage directory
     Directory? externalStorageDirectory = await getExternalStorageDirectory();
 
     if (externalStorageDirectory != null) {
-      // Construct the path for the screenshot directory using `path.join`
       String screenshotsPath = path.join(
         externalStorageDirectory.parent.parent.parent.parent.path,
         "Pictures",
         "Screenshots",
       );
 
-      // Check if the directory exists
       if (Directory(screenshotsPath).existsSync()) {
         return Directory(screenshotsPath);
       } else {
-        // Try DCIM/Screenshots as an alternative
         screenshotsPath = path.join(
           externalStorageDirectory.parent.parent.parent.parent.path,
           "DCIM",
@@ -73,24 +77,25 @@ class OverlayWidgetState extends State<OverlayWidget> {
         }
       }
     }
-    return null; // If the directory doesn't exist or isn't accessible
+    return null;
   }
 
   Future<String?> getLatestScreenshot() async {
-    final Directory? dir = await getScreenshotDirectory();
     // Try using MediaStore to get latest screenshot from Pictures/Screenshots directory.
-    final Directory screenshotsDir =
-        dir ?? Directory('/storage/emulated/0/Pictures/Screenshots');
 
     if (await screenshotsDir.exists()) {
-      List<FileSystemEntity> files = screenshotsDir.listSync();
+      List<FileSystemEntity> files =
+          screenshotsDir.listSync().whereType<File>().toList();
 
-      // Sort files by last modified time to get the latest one.
-      files.sort((a, b) {
-        return File(b.path)
-            .lastModifiedSync()
-            .compareTo(File(a.path).lastModifiedSync());
-      });
+      files.sort((a, b) => File(b.path)
+          .lastModifiedSync()
+          .compareTo(File(a.path).lastModifiedSync()));
+
+      // files.sort((a, b) {
+      //   return File(b.path)
+      //       .lastModifiedSync()
+      //       .compareTo(File(a.path).lastModifiedSync());
+      // });
 
       if (files.isNotEmpty) {
         return files.first.path;
@@ -107,32 +112,26 @@ class OverlayWidgetState extends State<OverlayWidget> {
       elevation: 0.0,
       child: GestureDetector(
         onTap: () async {
-          if (_currentShape == BoxShape.rectangle) {
-            // if (await OverlayPopUp.isActive()) {
-            //   await OverlayPopUp.updateOverlaySize(width: 100, height: 100);
-            // }
-
-            // setState(() {
-            //   _currentShape = BoxShape.circle;
-            // });
-          } else {
+          if (_currentShape != BoxShape.rectangle) {
             FlutterAccessibilityService.performGlobalAction(
               GlobalAction.globalActionTakeScreenshot,
-            );
-            controller = CropController();
-            await Future.delayed(const Duration(milliseconds: 1500))
-                .then((value) async {
-              String? pth = await getLatestScreenshot();
-              screenshotPath = pth;
-              loadImage(screenshotPath!);
+            ).then((value) async {
+              print("Screenshot taken");
+              controller = CropController();
+              await Future.delayed(const Duration(milliseconds: 2000))
+                  .then((value) async {
+                String? pth = await getLatestScreenshot();
+                screenshotPath = pth;
+                loadImage(screenshotPath!);
+              });
+              await Future.delayed(const Duration(milliseconds: 500));
+              setState(() {
+                _currentShape = BoxShape.rectangle;
+              });
+              if (await OverlayPopUp.isActive()) {
+                await OverlayPopUp.updateOverlaySize();
+              }
             });
-            await Future.delayed(const Duration(milliseconds: 1000));
-            setState(() {
-              _currentShape = BoxShape.rectangle;
-            });
-            if (await OverlayPopUp.isActive()) {
-              await OverlayPopUp.updateOverlaySize();
-            }
           }
         },
         child: Container(
