@@ -2,7 +2,7 @@
 
 **ScreenScribe** is an innovative app that allows users to capture screenshots and extract text from them using OCR (Optical Character Recognition). Designed to streamline productivity, ScreenScribe makes it easy to quickly capture information, search for text within images, and save content for later use. 
 
-> **Note**: ScreenScribe is currently in the **alpha stage** and may contain bugs. This is a fun project, so it does not yet follow a specific app structure or design pattern.
+> **Note**: ScreenScribe is currently in the very early development stage and may contain bugs. This is a fun project, so it does not yet follow a specific app structure or design pattern.
 
 ## Features
 
